@@ -40,6 +40,7 @@ class MyNotification {
       await flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
           ?.requestPermissions(alert: true, badge: true, sound: true);
+      await FirebaseMessaging.instance.setAutoInitEnabled(true);
     } else {
       await FirebaseMessaging.instance.requestPermission(
         alert: true,
@@ -65,6 +66,16 @@ class MyNotification {
         }
       },
     );
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((String token) async {
+      await Future.delayed(const Duration(seconds: 1));
+      final BuildContext? context = Get.context;
+      if (context == null) return;
+      final AuthController authController = Provider.of<AuthController>(context, listen: false);
+      if (authController.isLoggedIn()) {
+        await authController.updateToken(context);
+      }
+    });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (kDebugMode) {

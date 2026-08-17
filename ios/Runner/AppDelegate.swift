@@ -8,12 +8,13 @@ import UserNotifications
 
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, MessagingDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     FirebaseApp.configure()
+    Messaging.messaging().delegate = self
     GMSServices.provideAPIKey("AIzaSyBpRtsxvXSaPry45jANNZ8cFZ1pEVNMsOk")
     GeneratedPluginRegistrant.register(with: self)
     FlutterDownloaderPlugin.setPluginRegistrantCallback(registerPlugins)
@@ -30,6 +31,18 @@ import UserNotifications
                             didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     Messaging.messaging().apnsToken = deviceToken
     super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+  }
+
+  override func application(_ application: UIApplication,
+                            didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    NSLog("Failed to register for remote notifications: \(error.localizedDescription)")
+    super.application(application, didFailToRegisterForRemoteNotificationsWithError: error)
+  }
+
+  func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+    Messaging.messaging().token { token, _ in
+      NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: token)
+    }
   }
 }
 

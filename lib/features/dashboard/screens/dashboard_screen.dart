@@ -6,6 +6,7 @@ import 'package:sixvalley_vendor_app/common/basewidgets/confirmation_dialog_widg
 import 'package:sixvalley_vendor_app/common/basewidgets/custom_dialog_widget.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/controllers/digital_product_controller.dart';
 import 'package:sixvalley_vendor_app/features/ai/controllers/ai_controller.dart';
+import 'package:sixvalley_vendor_app/features/auth/controllers/auth_controller.dart';
 import 'package:sixvalley_vendor_app/features/pos/controllers/cart_controller.dart';
 import 'package:sixvalley_vendor_app/features/product/controllers/category_controller.dart';
 import 'package:sixvalley_vendor_app/features/shop/controllers/shop_controller.dart';
@@ -31,7 +32,7 @@ class DashboardScreen extends StatefulWidget {
   DashboardScreenState createState() => DashboardScreenState();
 }
 
-class DashboardScreenState extends State<DashboardScreen> {
+class DashboardScreenState extends State<DashboardScreen> with WidgetsBindingObserver {
   final PageController _pageController = PageController();
   int _pageIndex = 0;
   late List<Widget> _screens;
@@ -41,6 +42,7 @@ class DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     String languageCode = Provider.of<LocalizationController>(context, listen: false).locale.countryCode == 'US'?
     'en':Provider.of<LocalizationController>(context, listen: false).locale.countryCode!.toLowerCase();
     Provider.of<ProfileController>(context, listen: false).getSellerInfo();
@@ -69,6 +71,23 @@ class DashboardScreenState extends State<DashboardScreen> {
     ];
 
     NetworkInfo.checkConnectivity(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AuthController>(context, listen: false).updateToken(context);
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      Provider.of<AuthController>(context, listen: false).updateToken(context);
+    }
   }
 
   @override

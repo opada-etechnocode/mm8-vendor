@@ -82,14 +82,15 @@ class AuthRepository implements AuthRepositoryInterface{
   Future<ApiResponse> updateToken() async {
     try {
       String? deviceToken = await _getDeviceToken();
-      if (deviceToken != null && deviceToken.isNotEmpty) {
-        try {
-          await FirebaseMessaging.instance.subscribeToTopic(AppConstants.topic);
-          await FirebaseMessaging.instance.subscribeToTopic(AppConstants.maintenanceModeTopic);
-        } catch (e) {
-          if (kDebugMode) {
-            print('FCM subscribe error: $e');
-          }
+      if (deviceToken == null || deviceToken.isEmpty) {
+        return ApiResponse.withError('FCM token not ready');
+      }
+      try {
+        await FirebaseMessaging.instance.subscribeToTopic(AppConstants.topic);
+        await FirebaseMessaging.instance.subscribeToTopic(AppConstants.maintenanceModeTopic);
+      } catch (e) {
+        if (kDebugMode) {
+          print('FCM subscribe error: $e');
         }
       }
       Response response = await dioClient!.post(
@@ -104,23 +105,34 @@ class AuthRepository implements AuthRepositoryInterface{
 
   Future<String?> _getDeviceToken() async {
     if (Platform.isIOS) {
+      final NotificationSettings settings = await FirebaseMessaging.instance.getNotificationSettings();
+      if (settings.authorizationStatus == AuthorizationStatus.denied) {
+        return null;
+      }
       String? apnsToken = await FirebaseMessaging.instance.getAPNSToken();
       int attempts = 0;
-      while (apnsToken == null && attempts < 12) {
-        await Future.delayed(const Duration(seconds: 1));
+      while (apnsToken == null && attempts < 25) {
+        await Future.delayed(const Duration(milliseconds: 800));
         apnsToken = await FirebaseMessaging.instance.getAPNSToken();
         attempts++;
       }
-      if (kDebugMode) {
-        print('--------APNS Token---------- $apnsToken');
+      if (apnsToken == null) {
+        return null;
       }
     }
 
-    final String? deviceToken = await FirebaseMessaging.instance.getToken();
-    if (deviceToken != null && kDebugMode) {
-      print('--------Device Token---------- $deviceToken');
+    try {
+      final String? deviceToken = await FirebaseMessaging.instance.getToken();
+      if (deviceToken != null && kDebugMode) {
+        print('--------Device Token---------- $deviceToken');
+      }
+      return deviceToken;
+    } catch (e) {
+      if (kDebugMode) {
+        print('--------FCM getToken error---------- $e');
+      }
+      return null;
     }
-    return deviceToken;
   }
 
   @override
