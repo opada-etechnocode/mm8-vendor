@@ -74,6 +74,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 80 << 20;
   HttpOverrides.global = MyHttpOverrides();
   if(Firebase.apps.isEmpty) {
     if(Platform.isAndroid) {

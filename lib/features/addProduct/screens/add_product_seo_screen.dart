@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sixvalley_vendor_app/common/basewidgets/custom_asset_image_widget.dart';
 import 'package:sixvalley_vendor_app/common/basewidgets/custom_button_widget.dart';
+import 'package:sixvalley_vendor_app/common/basewidgets/custom_image_widget.dart';
 import 'package:sixvalley_vendor_app/common/basewidgets/textfeild/custom_text_feild_widget.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/controllers/add_product_image_controller.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/controllers/add_product_tax_controller.dart';
@@ -478,14 +479,12 @@ class AddProductSeoScreenState extends State<AddProductSeoScreen>  with Automati
                                             padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
                                             child: ClipRRect(
                                               borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
-                                              child: addProductImageController.selectedMetaImageFile != null ? Image.file(
-                                                File(addProductImageController.selectedMetaImageFile!.path), width: 140, height: 140, fit: BoxFit.cover,
-                                              ) : widget.product != null && ((_product?.metaSeoInfo?.imageFullUrl?.path?.isNotEmpty ?? false) || (_product?.metaImageFullUrl?.path?.isNotEmpty ?? false)) ? FadeInImage.assetNetwork(
+                                              child: addProductImageController.selectedMetaImageFile != null ? MemorySafeFileImage(
+                                                file: File(addProductImageController.selectedMetaImageFile!.path), width: 140, height: 140, fit: BoxFit.cover,
+                                              ) : widget.product != null && ((_product?.metaSeoInfo?.imageFullUrl?.path?.isNotEmpty ?? false) || (_product?.metaImageFullUrl?.path?.isNotEmpty ?? false)) ? CustomImageWidget(
                                                 placeholder: Images.placeholderImage,
                                                 image: _product!.metaSeoInfo != null ? _product!.metaSeoInfo?.imageFullUrl?.path ?? '' : _product!.metaImageFullUrl?.path ?? '',
                                                 height: 140, width: 140, fit: BoxFit.cover,
-                                                imageErrorBuilder: (c, o, s) => Image.asset(Images.placeholderImage, height: 140,
-                                                  width: 140, fit: BoxFit.cover, color: Theme.of(context).highlightColor),
                                               ) : Image.asset(Images.placeholderImage, height: 140,
                                                 width: 140, fit: BoxFit.cover, color: Theme.of(context).highlightColor,),
                                             ),

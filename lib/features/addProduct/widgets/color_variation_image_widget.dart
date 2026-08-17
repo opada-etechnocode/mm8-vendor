@@ -182,7 +182,7 @@ class _ColorVariationImageWidgetState extends State<ColorVariationImageWidget> {
                                 child: Container(decoration: const BoxDecoration(color: Colors.white,
                                   borderRadius: BorderRadius.all(Radius.circular(20)),),
                                     child: ClipRRect(borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingSizeSmall)),
-                                      child: Image.file(File(addProductImageController.imagesWithColor[index].image!.path),
+                                      child: MemorySafeFileImage(file: File(addProductImageController.imagesWithColor[index].image!.path),
                                         width: MediaQuery.of(context).size.width/2.3,
                                         height: MediaQuery.of(context).size.width/2.3,
                                         fit: BoxFit.cover)

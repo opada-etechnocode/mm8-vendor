@@ -352,14 +352,12 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                                                           padding: const EdgeInsets.all(0),
                                                           child: ClipRRect(
                                                             borderRadius: BorderRadius.circular(0),
-                                                            child: addProductImageController.selectedLogoFile != null ?  Image.file(File(addProductImageController.selectedLogoFile!.path),
+                                                            child: addProductImageController.selectedLogoFile != null ?  MemorySafeFileImage(file: File(addProductImageController.selectedLogoFile!.path),
                                                               width: 150, height: 150, fit: BoxFit.cover,
-                                                            ) : (widget.product != null && (widget.product!.thumbnailFullUrl?.path?.isNotEmpty ?? false)) ? FadeInImage.assetNetwork(
+                                                            ) : (widget.product != null && (widget.product!.thumbnailFullUrl?.path?.isNotEmpty ?? false)) ? CustomImageWidget(
                                                               placeholder: Images.placeholderImage,
                                                               image: widget.product!.thumbnailFullUrl!.path!,
                                                               height: 150, width: 150, fit: BoxFit.cover,
-                                                              imageErrorBuilder: (c, o, s) => Image.asset(Images.placeholderImage,
-                                                                  height: 150, width: 150, fit: BoxFit.cover, color: Theme.of(context).highlightColor),
                                                             ) : Image.asset(Images.placeholderImage, height: 150,
                                                               width: 150, fit: BoxFit.cover, color: Theme.of(context).highlightColor,),
                                                           ),
@@ -1086,7 +1084,7 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                                                     decoration: const BoxDecoration(color: Colors.white,
                                                       borderRadius: BorderRadius.all(Radius.circular(20)),),
                                                     child: ClipRRect(borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingSizeSmall)),
-                                                      child: Image.file(File(addProductImageController.withoutColor[index].image!.path),
+                                                      child: MemorySafeFileImage(file: File(addProductImageController.withoutColor[index].image!.path),
                                                         width: MediaQuery.of(context).size.width/2.3,
                                                         height: MediaQuery.of(context).size.width/2.3,
                                                         fit: BoxFit.cover,),) ,),
