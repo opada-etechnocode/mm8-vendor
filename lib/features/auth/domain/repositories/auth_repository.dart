@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -81,8 +82,16 @@ class AuthRepository implements AuthRepositoryInterface{
   Future<ApiResponse> updateToken() async {
     try {
       String? deviceToken = await _getDeviceToken();
-      FirebaseMessaging.instance.subscribeToTopic(AppConstants.topic);
-      FirebaseMessaging.instance.subscribeToTopic(AppConstants.maintenanceModeTopic);
+      if (deviceToken != null && deviceToken.isNotEmpty) {
+        try {
+          await FirebaseMessaging.instance.subscribeToTopic(AppConstants.topic);
+          await FirebaseMessaging.instance.subscribeToTopic(AppConstants.maintenanceModeTopic);
+        } catch (e) {
+          if (kDebugMode) {
+            print('FCM subscribe error: $e');
+          }
+        }
+      }
       Response response = await dioClient!.post(
         AppConstants.tokenUri,
         data: {"_method": "put", "cm_firebase_token": deviceToken},
@@ -94,13 +103,22 @@ class AuthRepository implements AuthRepositoryInterface{
   }
 
   Future<String?> _getDeviceToken() async {
-    String? deviceToken;
-    deviceToken = await FirebaseMessaging.instance.getToken();
-
-    if (deviceToken != null) {
-      if (kDebugMode) {
-        print('--------Device Token---------- $deviceToken');
+    if (Platform.isIOS) {
+      String? apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+      int attempts = 0;
+      while (apnsToken == null && attempts < 12) {
+        await Future.delayed(const Duration(seconds: 1));
+        apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+        attempts++;
       }
+      if (kDebugMode) {
+        print('--------APNS Token---------- $apnsToken');
+      }
+    }
+
+    final String? deviceToken = await FirebaseMessaging.instance.getToken();
+    if (deviceToken != null && kDebugMode) {
+      print('--------Device Token---------- $deviceToken');
     }
     return deviceToken;
   }

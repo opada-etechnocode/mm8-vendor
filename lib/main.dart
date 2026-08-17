@@ -91,9 +91,23 @@ Future<void> main() async {
         await Firebase.initializeApp();
       }
     } else {
-      await Firebase.initializeApp();
+      try {
+        await Firebase.initializeApp(
+          options: const FirebaseOptions(
+            apiKey: "AIzaSyAG-qCI6qk_c02v5PNdaV1s2g4ni9f8dtg",
+            appId: "1:177056885354:ios:5577d70298126f200b7813",
+            messagingSenderId: "177056885354",
+            projectId: "mm8market-237e9",
+            storageBucket: "mm8market-237e9.firebasestorage.app",
+            iosBundleId: "com.etechnocode.mm8vendor",
+          ),
+        );
+      } catch(_) {
+        await Firebase.initializeApp();
+      }
     }
   }
+  FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
 
   await FlutterDownloader.initialize(debug: true , ignoreSsl: true);
   await di.init();
@@ -138,7 +152,6 @@ Future<void> main() async {
   }
 
   await MyNotification.initialize(flutterLocalNotificationsPlugin);
-  FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
 
   runApp(MultiProvider(
     providers: [

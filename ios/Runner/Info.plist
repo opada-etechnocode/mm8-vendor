@@ -29,8 +29,8 @@
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
-	<key>LSApplicationCategoryType</key>
-	<string>FirebaseAppDelegateProxyEnabled</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>http</string>
@@ -46,6 +46,12 @@
 	<string>This app need camera access for taking photo for user profile picture.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app need photo gallery access for taking photo for user profile picture.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses your location to set delivery addresses on the map and to connect nearby thermal printers.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app uses your location to set delivery addresses on the map and to connect nearby thermal printers.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app uses your location to set delivery addresses on the map and to connect nearby thermal printers.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

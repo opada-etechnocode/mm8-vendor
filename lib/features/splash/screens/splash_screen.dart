@@ -62,6 +62,9 @@ class SplashScreenState extends State<SplashScreen> {
             ));
           } else {
             if(widget.body != null) {
+              if(Provider.of<AuthController>(context, listen: false).isLoggedIn()) {
+                await Provider.of<AuthController>(context, listen: false).updateToken(context);
+              }
               NotificationHelper.handleNotificationClick(widget.body, replace: true);
             } else {
               if(Provider.of<AuthController>(context, listen: false).isLoggedIn()) {
